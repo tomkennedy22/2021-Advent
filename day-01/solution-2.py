@@ -2,7 +2,6 @@ input_file = open('input.txt', 'r')
 input_values = [int(line) for line in input_file]
 
 window_size = 3
-place = 0
 increase_count = 0
 previous_sum = None
 
