@@ -1,21 +1,22 @@
+def parse_input_row(row):
+    split_row = row.split(' ')
+    return {'direction': split_row[0], 'magnitude': int(split_row[1])}
+
 input_file = open('input.txt', 'r')
-input_values = [line for line in input_file]
+input_values = [parse_input_row(line) for line in input_file]
 
 h_position = 0
 depth = 0
 aim = 0
-for i in input_values:
-    x = i.split(" ")
-    direction = x[0]
-    magnitude = int(x[1])
+for step in input_values:
 
-    if direction == 'forward':
-        h_position += magnitude
-        depth += magnitude * aim
-    elif direction == 'down':
-        aim += magnitude
-    elif direction == 'up':
-        aim -= magnitude
+    if step['direction'] == 'forward':
+        h_position += step['magnitude']
+        depth += step['magnitude'] * aim
+    elif step['direction'] == 'down':
+        aim += step['magnitude']
+    elif step['direction'] == 'up':
+        aim -= step['magnitude']
 
 # My Solution: 1975421260
 print(h_position * depth)
