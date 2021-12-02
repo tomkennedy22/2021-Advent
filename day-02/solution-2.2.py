@@ -18,5 +18,5 @@ for step in input_values:
     elif step['direction'] == 'up':
         aim -= step['magnitude']
 
-# My Solution: 1990000
+# My Solution: 1975421260
 print(h_position * depth)
