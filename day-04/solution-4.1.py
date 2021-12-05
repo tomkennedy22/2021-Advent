@@ -24,13 +24,13 @@ def search_columns(bingo_matrix, numbers_to_check):
 
 
 def get_drawn_numbers():
-    input_file = open("ag_input.txt")
+    input_file = open("input.txt")
     f_line = input_file.readline()
     drawn_numbers = f_line.strip().split(",")
     return drawn_numbers
 
 def generate_bingo_matrix():
-    input_file = open("ag_input.txt")
+    input_file = open("input.txt")
     bingo_lines = input_file.readlines()[1:]
 
     clean_bingo_lines = []
@@ -84,5 +84,6 @@ def find_winning_card():
    
 
 score = find_winning_card()
+# My Solution: 8580
 print(score)
 
