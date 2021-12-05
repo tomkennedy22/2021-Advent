@@ -3,7 +3,6 @@ BOARD_DIAMETER = 5
 class Board:
 
     def __init__(self, id):
-
         self.id = id
         self.board_won = False
         self.board_values = []
@@ -12,7 +11,6 @@ class Board:
         self.unseen_values = set()
 
     def add_row(self, input_line):
-
         values = [int(val) for val in input_line.split(' ') if len(val) > 0]
         self.board_values.append(values)
 
@@ -21,23 +19,19 @@ class Board:
             self.unseen_values.add(value)
 
     def filled_board(self):
-
         self.possible_sets = []
 
         for x in range(0, BOARD_DIAMETER):
             self.possible_sets.append( set( [self.board_values[x][y] for y in range(0, BOARD_DIAMETER)] ) )
             self.possible_sets.append( set( [self.board_values[y][x] for y in range(0, BOARD_DIAMETER)] ) )
 
-
     def value_called(self, val):
         if val in self.unseen_values:
             self.seen_values.add(val)
             self.unseen_values.remove(val)
-
             return self.check_board()
 
         return False
-
 
     def check_board(self):
 
@@ -52,7 +46,6 @@ class Board:
         return False
 
     def __repr__(self):
-
         s = ''
         for row in self.board_values:
             s += ''.join([' '*(3-len(str(val))) + str(val) for val in row]) + '\n'
@@ -94,9 +87,6 @@ def process_called_values():
 
                 if len(completed_boards) == len(boards):
                     return called_value * sum(board.unseen_values)
-
-
-
 
 
 print('Resulting value:', process_called_values())
