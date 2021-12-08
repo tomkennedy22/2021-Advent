@@ -1,5 +1,4 @@
 import datetime
-import multiprocessing as mp
 
 start_time = datetime.datetime.now()
 
@@ -34,6 +33,12 @@ for day in range(1, 256 + 1):
     day += 1
 
 # Answer: 1674303997472
-print(total_fish)
+dash_line = f'{"-"*60}'
+print(dash_line)
+print(f'Total fish: *** {total_fish} ***')
 
+end_time = datetime.datetime.now()
+print(f'\tExecution time: {((end_time - start_time).total_seconds() * 1000)}ms'  )
+print(f'Days passed: {day}'  )
+print(dash_line)
 
