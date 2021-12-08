@@ -17,7 +17,6 @@ one_day_left_count = sum([number == 1 for number in numbers]) #144
 zero_day_left_count = sum([number == 0 for number in numbers]) #0
 
 
-day = 1
 for day in range(1, 256 + 1):
     one_day_holder = one_day_left_count
     one_day_left_count = two_day_left_count
@@ -30,7 +29,6 @@ for day in range(1, 256 + 1):
     eight_day_left_count = zero_day_left_count
     zero_day_left_count = one_day_holder
     total_fish = zero_day_left_count + one_day_left_count + two_day_left_count + three_day_left_count + four_day_left_count + five_day_left_count + six_day_left_count + seven_day_left_count + eight_day_left_count
-    day += 1
 
 # Answer: 1674303997472
 dash_line = f'{"-"*60}'
@@ -39,6 +37,6 @@ print(f'Total fish: *** {total_fish} ***')
 
 end_time = datetime.datetime.now()
 print(f'\tExecution time: {((end_time - start_time).total_seconds() * 1000)}ms'  )
-print(f'Days passed: {day}'  )
+print(f'\tDays passed: {day}'  )
 print(dash_line)
 
