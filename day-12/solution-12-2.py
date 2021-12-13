@@ -15,14 +15,23 @@ class Cave:
         else:
             self.cave_size = 'L'
 
-    def cave_can_be_visited(self, visited_set):
-        if self.cave_name not in visited_set or self.cave_size == 'L':
-            return True
+    def cave_can_be_visited(self, visit_tracker):
 
-        return False
+        return_val = False
+        if self.cave_size == 'L':
+            return_val = True
+        
+        elif self.cave_name not in visit_tracker:
+            return_val = True
+
+        elif len([cave for cave, visit_count in visit_tracker.items() if cave == cave.lower() and visit_count > 1]) == 0:
+            return_val = True
+
+        return return_val
 
     def add_connection(self, connected_cave):
-        self.connected_caves.append(connected_cave)
+        if connected_cave.cave_name != 'start':
+            self.connected_caves.append(connected_cave)
 
     def __repr__(self):
         return f"{self.cave_name} is a {self.cave_size} cave, and is connected to caves {[cave.cave_name for cave in self.connected_caves]}"
@@ -53,22 +62,22 @@ for path in paths:
     path_end_cave.add_connection(path_start_cave)
 
 
-def traverse_caves(current_cave, visited_set = [], path_count = 0):
+def traverse_caves(current_cave, visit_tracker = {}, path_count = 0):
 
-    visited_set.append(current_cave.cave_name)
-
+    visit_tracker[current_cave.cave_name] = visit_tracker.get(current_cave.cave_name, 0) + 1
+    
     if current_cave.cave_name == 'end':
         return path_count + 1
 
     for connected_cave in current_cave.connected_caves:
-        if connected_cave.cave_can_be_visited(visited_set):
-            path_count += traverse_caves(connected_cave, visited_set.copy())
+        if connected_cave.cave_can_be_visited(visit_tracker):
+            path_count += traverse_caves(connected_cave, visit_tracker.copy())
 
     return path_count
 
     
 
-path_count = traverse_caves(cave_map['start'], [])
+path_count = traverse_caves(cave_map['start'], {})
 
 dash_line = f'{"-"*60}'
 print(dash_line)
