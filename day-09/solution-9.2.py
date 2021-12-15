@@ -1,3 +1,5 @@
+#failed attempt
+
 input_file = open('test_input.txt', 'r')
 input_values= [list(line.strip()) for line in input_file]
 
