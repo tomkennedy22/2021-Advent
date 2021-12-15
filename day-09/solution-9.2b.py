@@ -1,88 +1,75 @@
 from collections import deque
+import math
 
-input_file = open('test_input.txt', 'r')
+input_file = open('input.txt', 'r')
 input_values= [list(line.strip()) for line in input_file]
 
 for sequence in input_values:
     for i in range(0, len(sequence)):
         sequence[i] = int(sequence[i])
 
-
-def compare_horizontal_neighbors(current_list, i):
-    if i == 0:
-        if current_list[i] - current_list[i+1] < 0:
-            return True
-        else:
+def check_if_low_point(input_values, x, y):
+    for (x_val, y_val) in find_neighbors(input_values, x, y):
+        orig_value = input_values[x][y]
+        neighbor = input_values[x_val][y_val]
+        if orig_value == 9 or neighbor < orig_value:
             return False
-    elif i == len(current_list) - 1:
-        if current_list[i] - current_list[i-1] < 0:
-            return True
-        else:
-            return False
-    elif current_list[i] - current_list[i-1] < 0 and current_list[i] - current_list[i+1] < 0:
-        return True
-    else:
-        return False
+    return True
 
-def compare_vertical_neighbors(current_list, list_above, list_below, i):
-    results = [c < b and c < a for c, b, a in zip(current_list, list_below, list_above)]
-    result = results[i]
-    return result
-
-def find_current_list(input_values, i):
-    current_list = input_values[i]
-    return current_list
-
-def find_list_above(input_values, i):
-    if i == 0:
-        return [9 for i in range(len(input_values[i]))]
-    else:
-        list_above = input_values[i-1]
-    return list_above 
-
-def find_list_below(input_values, i):
-    if i == len(input_values) - 1:
-        return [9 for i in range(len(input_values[i]))]
-    else:
-        list_below = input_values[i+1]
-    return list_below
+def find_neighbors(input_values, x, y):
+    neighbor_positions = [(x-1, y), (x+1, y), (x, y-1), (x, y+1)]
+    neighbor_list = []
+    for (x_val, y_val) in neighbor_positions:
+        if 0 <= x_val < len(input_values) and 0 <= y_val < len(input_values[x]):
+            neighbor_list.append((x_val, y_val))
+    return neighbor_list
 
 
-def find_low_points(input_values):
-    results = []
+
+def find_low_points_new(input_values):
     low_points = []
-    positions = []
-    for i in range(0, len(input_values)):
-        current_list = find_current_list(input_values, i)
-        list_above = find_list_above(input_values, i)
-        list_below = find_list_below(input_values, i)
-        for x in range(0, len(current_list)):
-            vertical_result = compare_vertical_neighbors(current_list, list_above, list_below, x)
-            horizontal_result = compare_horizontal_neighbors(current_list, x)
-            if vertical_result and horizontal_result:
-                low_points.append(current_list[x])
-                positions.append((i, x))
-                results.append(low_points)
-                results.append(positions)
+    for x in range(len(input_values)):
+        for y in range(len(input_values[x])):
+            if check_if_low_point(input_values, x, y):
+                low_points.append((x, y))
+    return low_points
 
-    return results
 
-# ----------------------------------
-
-#def find_neighbors
-
-def find_basin(input_values, i, x):
+def find_basin(input_values, x, y):
     basin = []
-    basin_points = set()
-    queue = deque([(i, x)])
-
+    checked_points = set()
+    queue = deque([(x,y)])
     while queue:
-        (current_i, current_x) = queue.pop()
-
-        if (current_i, current_x) in basin_points:
+        (x_val, y_val) = queue.pop()
+        if (x_val, y_val) in checked_points:
             continue
-        else: 
-            basin_points.add((current_i, current_x))
-            if input_values[current_i][current_x] != 9:
-                basin.append((current_i, current_x))
-                #queue.extend(([next_i, next_x) for (next_i, next_x) in ])
+        else:
+            checked_points.add((x_val, y_val))
+            if input_values[x_val][y_val] != 9:
+                basin.append((x_val, y_val))
+                for (neighbor_x, neighbor_y) in find_neighbors(input_values, x_val, y_val):
+                    neighbors_to_add = []
+                    if (neighbor_x, neighbor_y) not in checked_points:
+                        neighbors_to_add.append((neighbor_x, neighbor_y))
+                        queue.extend(neighbors_to_add)
+    return basin
+
+
+
+low_points = find_low_points_new(input_values)
+
+basins = [] 
+for (x, y) in low_points:
+    basin = find_basin(input_values, x, y)
+    basins.append(basin)
+
+length_list = []
+for basin in basins: 
+    length_list.append(len(basin))
+
+top_three = sorted(length_list, reverse=True)[0:3]
+result = math.prod(top_three)
+#Answer: 1038240
+print(result)
+
+
