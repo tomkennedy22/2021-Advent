@@ -30,7 +30,7 @@ def calculate_neighbors(node, grid, node_map):
     node_map[node] = {encode_position_str(node_coordinates): grid[node_coordinates[0]][node_coordinates[1]] for node_coordinates in neighbor_list}
 
 
-input_file = open('sample-input.txt', 'r')
+input_file = open('input.txt', 'r')
 
 node_map = {}
 grid = []
@@ -59,7 +59,7 @@ total_distance = 0
 
 while len(nodes_to_visit) > 0:
     for neighbour_node, neighbor_distance in node_map[current_node].items():
-        if neighbour_node in nodes_to_visit: 
+        if neighbour_node in nodes_to_visit:
             test_distance = total_distance + neighbor_distance
 
             if nodes_to_visit[neighbour_node] is None or nodes_to_visit[neighbour_node] > test_distance:
