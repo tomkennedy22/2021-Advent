@@ -1,7 +1,6 @@
-from itertools import product 
 import ast 
 
-input_file = open("sample_input.txt")
+input_file = open("input.txt")
 reboot_steps = input_file.readlines()
 
 directions = []
@@ -10,7 +9,10 @@ max_vertices = []
 
 for step in reboot_steps:
     step = step.strip().split(" ")
-    directions.append(step[0])
+    if step[0] == 'on':
+        directions.append(1)
+    else:
+        directions.append(-1)
     coordinates = step[1].split(',')
     points = []
     for c in coordinates:
@@ -28,17 +30,54 @@ for step in reboot_steps:
         max_points.append(max_val)
     min_vertices.append(min_points)
     max_vertices.append(max_points)
-print(min_vertices)
-print(max_vertices)
-print(directions)
-
     
-def find_total_points(max_vertex, min_vertex):
-    x_dif = max_vertex[0] - min_vertex[0]
-    y_dif = max_vertex[1] - min_vertex[1]
-    z_dif = max_vertex[2] - min_vertex[2]
-    num_points = (x_dif +1) * (y_dif+1) * (z_dif+1)
-    return num_points
+#print(directions)
+#print(min_vertices)
+#print(max_vertices)
+
+def check_for_intersect(cuboid_a, cuboid_b):
+    if not(cuboid_a[0] <= cuboid_b[1] and cuboid_a[1] >= cuboid_b[0]):
+        return False
+ 
+    if not(cuboid_a[2] <= cuboid_b[3] and cuboid_a[3] >= cuboid_b[2]):
+        return False
+ 
+    if not(cuboid_a[4] <= cuboid_b[5] and cuboid_a[5] >= cuboid_b[4]):
+        return False
+ 
+    return True
+
+def create_cuboid_from_list(min_vertices_list, max_vertices_list, direction_list, i):
+    min_x = min_vertices_list[i][0]
+    max_x = max_vertices_list[i][0]
+    min_y = min_vertices_list[i][1]
+    max_y = max_vertices_list[i][1]
+    min_z = min_vertices_list[i][2]
+    max_z = max_vertices_list[i][2]
+    direction = direction_list[i]
+    return (min_x, max_x, min_y, max_y, min_z, max_z, direction)
+
+
+
+def find_intersection_cuboid(cuboid_a, cuboid_b):
+    min_x = max(cuboid_a[0], cuboid_b[0])
+    max_x = min(cuboid_a[1], cuboid_b[1])
+    min_y = max(cuboid_a[2], cuboid_b[2])
+    max_y = min(cuboid_a[3], cuboid_b[3])
+    min_z = max(cuboid_a[4], cuboid_b[4])
+    max_z = min(cuboid_a[5], cuboid_b[5])
+
+    direction = cuboid_a[6] * cuboid_b[6]
+
+    if cuboid_a[6] == 1 and cuboid_b[6] == 1:
+        direction = -1
+    elif cuboid_a[6] == -1 and cuboid_b[6] == -1:
+        direction = 1
+    elif cuboid_a[6] == 1 and cuboid_b[6] == -1:
+        direction = 1 
+    
+    return (min_x, max_x, min_y, max_y, min_z, max_z, direction)
+
 
 def find_line_overlap(max_vertex_a, min_vertex_a, max_vertex_b, min_vertex_b, line):
     if line == 'x':
@@ -52,45 +91,46 @@ def find_line_overlap(max_vertex_a, min_vertex_a, max_vertex_b, min_vertex_b, li
 
 
 def find_points_overlap(line_overlap):
-    if line_overlap < 0:
-        points_overlap = 0
-    else:
-        points_overlap = line_overlap + 1
-    return points_overlap
-
-def find_volume_overlap(*args): #the args should be the x, y, and z line overlaps
-    volume = 1
-    for a in args:
-        if a != 0:
-            volume *= a
-    return volume
-
-# 1. using only the points given, find volume inclusive of points (10, 10, 10) (12, 12, 12)
-# 2. using only points given (not range), find vertices 
-# volume = # of cubes turned on / off
-# 3. find volume of next cube and vertices of next cube (11, 11, 11) (13, 13, 13)
-# find overlap of x line, y line, and z line from all pervious cuboids
-# multiply those to find volume of overlap
-# number on - overlap = how many new cubes get turned on or off
-# add number of cubes now on or off to total
-# continue 
+   if line_overlap < 0:
+       points_overlap = 0
+   else:
+       points_overlap = line_overlap + 1
+   return points_overlap
 
 
-on_cube_count = 0
+def find_total_points(cuboid):
+    x_dif = cuboid[1] - cuboid[0]
+    y_dif = cuboid[3] - cuboid[2]
+    z_dif = cuboid[5] - cuboid[4]
+    num_points = (x_dif +1) * (y_dif+1) * (z_dif+1)
+    return num_points
+
+cuboids = []
+
 i = 0
-for i in range(0, len(directions)):
-    if directions[i] == 'on':
-        cuboid_points = find_total_points(max_vertices[i], min_vertices[i])
-        x_overlap = find_line_overlap()
-        on_cube_count += cuboid_points
+for i in range(0, 420):
+    #print(f'i is {i}')
+    current_cuboid = create_cuboid_from_list(min_vertices, max_vertices, directions, i)
 
-    
+    intersections = [] 
 
+    for cuboid in cuboids:
+        if check_for_intersect(current_cuboid, cuboid):
+            intersection_cuboid = find_intersection_cuboid(current_cuboid, cuboid)
+            intersections.append(intersection_cuboid)
 
-   
+    for intersection_cuboid in intersections:
+        cuboids.append(intersection_cuboid)
 
+    if directions[i] == 1:
+        cuboids.append(current_cuboid)
+        #print(f'cuboid list is now: {cuboids}')
 
+    on_cube_count = 0
 
+    for cuboid in cuboids:
+        on_cube_count += find_total_points(cuboid) * cuboid[6]
 
-
+print(f'Answer is: {on_cube_count}')
+#Answer: 1325473814582641
 
